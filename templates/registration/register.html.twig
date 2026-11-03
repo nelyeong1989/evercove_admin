@@ -1,19 +1,107 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Register — Evercove Admin{% endblock %}
+
+{% block stylesheets %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body {
+    background-color: #f4f6f8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  .auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid rgba(188, 148, 86, 0.2);
+    overflow: hidden;
+  }
+  .auth-header {
+    background: #274d3a;
+    color: #f2e1d1;
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+  .auth-header h3 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+  }
+  .auth-header p {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+  .auth-body {
+    padding: 2rem 1.75rem;
+  }
+  .btn-gold {
+    background: #bc9456;
+    color: #ffffff;
+    font-weight: 700;
+    border: none;
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .btn-gold:hover {
+    background: #a17d45;
+    color: #ffffff;
+  }
+  .auth-footer {
+    text-align: center;
+    margin-top: 1.25rem;
+    font-size: 0.85rem;
+  }
+  .auth-footer a {
+    color: #274d3a;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .auth-footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
-
-    {{ form_errors(registrationForm) }}
+<div class="auth-card">
+  <div class="auth-header">
+    <h3>Evercove Admin</h3>
+    <p>Create a new administrator account</p>
+  </div>
+  <div class="auth-body">
+    {% if form_errors(registrationForm) %}
+      <div class="alert alert-danger p-2 mb-3" style="font-size: 0.85rem;">
+        {{ form_errors(registrationForm) }}
+      </div>
+    {% endif %}
 
     {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+      {{ form_row(registrationForm.username) }}
+      {{ form_row(registrationForm.email) }}
+      {{ form_row(registrationForm.plainPassword) }}
 
-        <button type="submit" class="btn">Register</button>
+      <button type="submit" class="btn btn-gold mt-2">Create Account</button>
     {{ form_end(registrationForm) }}
+
+    <div class="auth-footer text-muted">
+      Already have an account? <a href="{{ path('app_login') }}">Sign In</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
