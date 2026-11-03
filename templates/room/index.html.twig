@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Room Catalog — Evercove Admin{% endblock %}
+
+{% block stylesheets %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body { background-color: #f8f9fa; }
+  .admin-container { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+  .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+  .page-header h2 { color: #274d3a; font-weight: 700; font-size: 1.6rem; margin-bottom: 0.25rem; }
+  .btn-gold { background: #bc9456; color: #fff; font-weight: 700; border: none; padding: 0.6rem 1.25rem; border-radius: 6px; font-size: 0.88rem; text-decoration: none; }
+  .btn-gold:hover { background: #a17d45; color: #fff; }
+  .table-box { background: #fff; border: 1px solid rgba(188, 148, 86, 0.2); border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); }
+  table th { background: #274d3a; color: #f2e1d1; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.85rem 1rem; }
+  table td { padding: 1rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+  {% for message in app.flashes('success') %}
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="background-color: #305d4b; color: #ffffff; border: none; font-size: 0.88rem; border-radius: 8px;">
+      <strong>Success!</strong> {{ message }}
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+
+  <div class="page-header">
+    <div>
+      <h2>Room Catalog</h2>
+      <p class="text-muted mb-0" style="font-size: 0.9rem;">Manage individual rooms, night rates, and availability statuses.</p>
+    </div>
+    <a href="{{ path('app_room_new') }}" class="btn btn-gold">+ Create New Room</a>
+  </div>
+
+  <div class="table-box">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="border-top-left-radius: 6px;">ID</th>
+            <th>Room Name</th>
+            <th>Category</th>
+            <th>Price / Night</th>
+            <th>Capacity</th>
+            <th>Status</th>
+            <th class="text-end" style="border-top-right-radius: 6px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for room in rooms %}
+          <tr>
+            <td><strong>#{{ room.id }}</strong></td>
+            <td><strong style="color: #274d3a;">{{ room.name }}</strong></td>
+            <td><span class="badge" style="background-color: #f2e1d1; color: #274d3a;">{{ room.category.name }}</span></td>
+            <td><strong>₱{{ room.pricePerNight|number_format(2) }}</strong></td>
+            <td>{{ room.capacity }} guests</td>
+            <td>
+              {% if room.isAvailable %}
+                <span class="badge bg-success">Available</span>
+              {% else %}
+                <span class="badge bg-secondary">Maintenance</span>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <a href="{{ path('app_room_show', {'id': room.id}) }}" class="btn btn-sm btn-outline-secondary me-1">View</a>
+              <a href="{{ path('app_room_edit', {'id': room.id}) }}" class="btn btn-sm btn-outline-success">Edit</a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center text-muted py-5">No rooms registered yet. Click "+ Create New Room" to add one.</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
