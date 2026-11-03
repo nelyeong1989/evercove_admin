@@ -10,12 +10,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/category')]
-class CategoryController extends AbstractController
+#[IsGranted('ROLE_ADMIN')]
+final class CategoryController extends AbstractController
 {
-    #[Route('/', name: 'app_category_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager): Response
+    #[Route('/', name: 'app_category_index', methods: ['GET'])]
+    public function index(CategoryRepository $categoryRepository): Response
+    {
+        return $this->render('category/index.html.twig', [
+            'categories' => $categoryRepository->findAll(),
+        ]);
+    }
+
+    // MUST BE PLACED BEFORE /category/{id}
+    #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
@@ -25,18 +36,19 @@ class CategoryController extends AbstractController
             $entityManager->persist($category);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Room category has been saved successfully!');
+            $this->addFlash('success', 'Category created successfully!');
 
             return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('category/index.html.twig', [
-            'categories' => $categoryRepository->findAll(),
-            'form' => $form->createView(),
+        return $this->render('category/new.html.twig', [
+            'category' => $category,
+            'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_category_show', methods: ['GET'])]
+    // Add numeric requirement so {id} only matches digits
+    #[Route('/{id}', name: 'app_category_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Category $category): Response
     {
         return $this->render('category/show.html.twig', [
@@ -44,7 +56,7 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_category_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_category_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CategoryType::class, $category);
@@ -53,7 +65,7 @@ class CategoryController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            $this->addFlash('success', 'Room category updated successfully!');
+            $this->addFlash('success', 'Category updated successfully!');
 
             return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -64,13 +76,13 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_category_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_category_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$category->getId(), (string) $request->getPayload()->get('_token'))) {
             $entityManager->remove($category);
             $entityManager->flush();
-            $this->addFlash('success', 'Room category removed.');
+            $this->addFlash('success', 'Category deleted.');
         }
 
         return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
