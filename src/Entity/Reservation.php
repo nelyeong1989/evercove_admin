@@ -34,6 +34,9 @@ class Reservation
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]
+    private ?Payment $payment = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -113,5 +116,22 @@ class Reservation
     public function __toString(): string
     {
         return 'Reservation #' . ($this->id ?? '');
+    }
+
+    public function getPayment(): ?Payment
+    {
+        return $this->payment;
+    }
+
+    public function setPayment(Payment $payment): static
+    {
+        // set the owning side of the relation if necessary
+        if ($payment->getReservation() !== $this) {
+            $payment->setReservation($this);
+        }
+
+        $this->payment = $payment;
+
+        return $this;
     }
 }
