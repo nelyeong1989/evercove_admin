@@ -47,6 +47,9 @@ class Room
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'room')]
     private Collection $reviews;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $inclusions = null;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
@@ -190,6 +193,18 @@ class Room
                 $review->setRoom(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getInclusions(): ?string
+    {
+        return $this->inclusions;
+    }
+
+    public function setInclusions(?string $inclusions): static
+    {
+        $this->inclusions = $inclusions;
 
         return $this;
     }

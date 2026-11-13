@@ -10,8 +10,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/room')]
+#[IsGranted('ROLE_ADMIN')]
 final class RoomController extends AbstractController
 {
     #[Route(name: 'app_room_index', methods: ['GET'])]
@@ -33,6 +35,8 @@ final class RoomController extends AbstractController
             $entityManager->persist($room);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Room created successfully!');
+
             return $this->redirectToRoute('app_room_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -42,7 +46,7 @@ final class RoomController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_room_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_room_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Room $room): Response
     {
         return $this->render('room/show.html.twig', [
@@ -50,7 +54,7 @@ final class RoomController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_room_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_room_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Room $room, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(RoomType::class, $room);
@@ -58,6 +62,8 @@ final class RoomController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            $this->addFlash('success', 'Room updated successfully!');
 
             return $this->redirectToRoute('app_room_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -68,12 +74,13 @@ final class RoomController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_room_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_room_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Room $room, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$room->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($room);
             $entityManager->flush();
+            $this->addFlash('success', 'Room deleted.');
         }
 
         return $this->redirectToRoute('app_room_index', [], Response::HTTP_SEE_OTHER);

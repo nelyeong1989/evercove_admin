@@ -1,0 +1,639 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Evercove Inn &amp; Suites — Check In. Turn Off.{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+  /* Preserve original style.css typography, lists, and container width */
+  body.evercove-storefront-shell {
+    background-color: var(--cream);
+    color: var(--charcoal);
+  }
+
+  .evercove-storefront-shell .container {
+    width: 92%;
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+
+  .evercove-storefront-shell a {
+    text-decoration: none;
+  }
+
+  .evercove-storefront-shell ul {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+  }
+
+  /* Balanced Top Storefront Navigation */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  .site-header .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .site-header .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.25rem;
+  }
+
+  .site-header .nav-links a {
+    color: var(--charcoal);
+    white-space: nowrap;
+  }
+
+  .site-header .nav-links a:hover {
+    color: var(--gold-dark);
+  }
+
+  .site-header .user-badge {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  /* Front Hero with green.jpg background */
+  .hero.hero-green-bg {
+    background: linear-gradient(105deg, rgba(24, 48, 36, 0.88) 0%, rgba(39, 77, 58, 0.72) 58%, rgba(39, 77, 58, 0.56) 100%),
+                url('{{ asset("images/green.jpg") }}') center 30%/cover no-repeat;
+    padding: 5rem 0 6.25rem;
+    position: relative;
+  }
+
+  /* Zigzag Mountain + Pattern Divider */
+  .hero-divider-wrap {
+    margin-top: -32px;
+    position: relative;
+    z-index: 4;
+  }
+
+  .section-divider-wrap {
+    position: relative;
+    width: 100%;
+  }
+
+  .room-filters {
+    flex-wrap: wrap;
+  }
+
+  .testimonials {
+    padding: 4.5rem 0 5rem;
+  }
+
+  /* Override style.css custom .modal-body flex/grid split so Bootstrap modal stacks cleanly */
+  #inquireRoomModal .modal-body {
+    display: block !important;
+    background: var(--cream-light) !important;
+    padding: 1.5rem !important;
+  }
+
+  #inquireRoomModal .modal-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    background: #274d3a !important;
+    color: #f2e1d1 !important;
+  }
+
+  #inquireRoomModal .modal-footer {
+    display: flex !important;
+    justify-content: flex-end;
+    background: var(--cream) !important;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
+    .site-header .header-container {
+      flex-wrap: wrap;
+    }
+
+    .site-header .nav-links {
+      order: 3;
+      width: 100%;
+      gap: 1.25rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(188, 148, 86, 0.18);
+    }
+
+    .hero-container,
+    .about,
+    .feature,
+    .split-panels {
+      grid-template-columns: 1fr;
+    }
+
+    .room-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-top {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .about-images {
+      height: 300px;
+      margin-bottom: 1rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .hero-content h1 {
+      font-size: 2.1rem;
+    }
+
+    .room-grid,
+    .feature-cards,
+    .testi-grid,
+    .footer-top {
+      grid-template-columns: 1fr;
+    }
+
+    .panel {
+      padding: 2.5rem 1.75rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+{# 1. Header Navigation #}
+<header class="site-header">
+  <div class="container header-container">
+    <a href="{{ path('app_home') }}" class="logo">
+      <img src="{{ asset('images/logo-1.png') }}" alt="Evercove Inn &amp; Suites">
+    </a>
+
+    <nav class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#rooms">Rooms</a>
+      <a href="#experience">Experience</a>
+      <a href="#reviews">Reviews</a>
+    </nav>
+
+    <div class="user-badge">
+      {% if app.user %}
+        <span class="user-greeting">Hi, {{ app.user.username }}</span>
+
+        <a href="{{ is_granted('ROLE_ADMIN') ? path('app_dashboard') : path('app_reservation_index') }}"
+           class="btn btn-green btn-sm">
+          Management Console
+        </a>
+
+        <a href="{{ path('app_logout') }}" class="btn btn-sage btn-sm">Log Out</a>
+      {% else %}
+        <a href="{{ path('app_login') }}" class="btn btn-green btn-sm">Sign In</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+{# 2. Hero Section with green.jpg Background #}
+<section id="home" class="hero hero-green-bg">
+  <div class="container hero-container">
+    <div class="hero-content">
+      <span class="eyebrow">A Boutique Inn in the Hills Above Dumaguete</span>
+      <h1>Disconnect from the world.<br>Reconnect with <span>each other.</span></h1>
+      <p>Moody, romantic warmth meets premium comfort — built for late-night talks, good music, and effortless connection.</p>
+      <div class="hero-actions">
+        <a href="#rooms" class="btn btn-gold">Explore Rooms</a>
+        <a href="#about" class="btn btn-outline-cream">Our Story</a>
+      </div>
+    </div>
+
+    <div class="season-card">
+      <div class="thumb"></div>
+      <div class="season-text">
+        <span class="eyebrow">This Season</span>
+        <h4>The Fireside Weekend Package is here</h4>
+        <a href="#experience">See what's included &rsaquo;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# 3. Zigzag Mountain & Pattern Divider #}
+<div class="hero-divider-wrap">
+  <div class="divider-mountain"></div>
+  <div class="pattern-band"></div>
+</div>
+
+{# 4. About Evercove Section #}
+<section id="about" class="section" style="padding-top: 4.5rem;">
+  <div class="container about">
+    <div class="about-images">
+      <img src="{{ asset('images/about-1.jpg') }}" alt="Evercove suite interior" class="img-back">
+      <img src="{{ asset('images/about-2.jpg') }}" alt="Loft bedroom with spiral staircase" class="img-front">
+    </div>
+
+    <div class="about-text">
+      <span class="eyebrow">About Evercove</span>
+      <h2>A low-key sanctuary, built for the people you'd cross the woods for.</h2>
+      <p>We are a boutique inn built for young adults to disconnect from the world and reconnect with each other — blending moody, romantic warmth with premium comfort.</p>
+      <p>Every room, every trail, every shared breakfast is built around the same idea: strip away the noise, and let the people you're with be the whole point of the trip.</p>
+
+      <div class="about-stats-wrapper">
+        <div class="about-stats">
+          <div class="stat">
+            <div class="num">{{ rooms|length > 0 ? rooms|length : 8 }}</div>
+            <div class="lbl">Rooms &amp; Suites</div>
+          </div>
+          <div class="stat">
+            <div class="num">40</div>
+            <div class="lbl">Acres of Trail</div>
+          </div>
+          <div class="stat">
+            <div class="num">5.0</div>
+            <div class="lbl">Rating (5 reviews)</div>
+          </div>
+        </div>
+        <img src="{{ asset('images/bed.png') }}" alt="Bed Icon" class="bed-icon">
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider-wrap">
+  <div class="divider-mountain"></div>
+  <div class="pattern-band"></div>
+</div>
+
+{# 5. Live Rooms & Suites Catalog #}
+<section id="rooms" class="section section-rooms" style="padding-top: 4.5rem; padding-bottom: 4.5rem;">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Where You'll Stay</span>
+      <h2>Our Most-Loved Rooms</h2>
+      <p>Intentional room layouts, each built around fewer distractions and better company.</p>
+    </div>
+
+    {# Category Filter Pills #}
+    <div class="room-filters">
+      <button type="button" class="filter-pill active" onclick="filterCategory('all', this)">All Rooms</button>
+      {% for category in categories %}
+        <button type="button" class="filter-pill" onclick="filterCategory('cat-{{ category.id }}', this)">
+          {{ category.name }}
+        </button>
+      {% endfor %}
+    </div>
+
+    {# Dynamic Room Grid from Symfony Database #}
+    <div class="room-grid" id="room-grid">
+      {% for room in rooms %}
+        {% set catName = room.category ? room.category.name : 'Suite' %}
+        <div class="room-card"
+             data-category="cat-{{ room.category ? room.category.id : 'none' }}"
+             data-capacity="{{ room.capacity }}"
+             style="{{ not room.isAvailable ? 'opacity: 0.82;' : '' }}">
+
+          {# Photo Container with Slide-Up Inclusions Sheet #}
+          <div class="room-card-media">
+            <img src="{{ room.imagePath ? asset(room.imagePath|trim('/')) : asset('images/room-1.jpg') }}"
+                 alt="{{ room.name }}">
+
+            {% if not room.isAvailable %}
+              <div style="position: absolute; top: 10px; right: 10px; z-index: 3;">
+                <span class="badge badge-cancelled" style="font-size: 0.65rem; box-shadow: 0 2px 8px rgba(0,0,0,0.35);">Maintenance</span>
+              </div>
+            {% endif %}
+
+            <div class="room-inclusions-sheet" id="sheet-{{ room.id }}">
+              <button type="button" class="sheet-close" onclick="toggleSheet({{ room.id }})">&times;</button>
+              <span class="sheet-eyebrow">Included with stay</span>
+              <ul class="sheet-list">
+                {% if room.inclusions is not empty %}
+                  {% for item in room.inclusions|split("\n") %}
+                    {% if item|trim is not empty %}
+                      <li>{{ item|trim }}</li>
+                    {% endif %}
+                  {% endfor %}
+                {% elseif 'Single' in catName %}
+                  <li>Queen-size plush bed</li>
+                  <li>Complimentary breakfast</li>
+                  <li>Nightly firepit lounge</li>
+                  <li>High-speed Wi-Fi desk</li>
+                {% elseif 'Cabin' in catName %}
+                  <li>Timber King-size bed</li>
+                  <li>Complimentary breakfast</li>
+                  <li>Private forest balcony</li>
+                  <li>Vinyl room access</li>
+                {% else %}
+                  <li>Expansive master King suite</li>
+                  <li>Complimentary breakfast</li>
+                  <li>Soaking tub &amp; double vanity</li>
+                  <li>Panoramic private terrace</li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+
+          <div class="room-card-body">
+            <div class="room-cat">
+              {{ catName }} &bull; Max {{ room.capacity }} Guests
+              {% if not room.isAvailable %}
+                <span style="color: var(--danger); font-size: 0.65rem; font-weight: 700; margin-left: 4px;">(Unavailable)</span>
+              {% endif %}
+            </div>
+            <h3>{{ room.name }}</h3>
+            <p class="room-price"><strong>&#8369;{{ room.pricePerNight|number_format(2) }}</strong> / night</p>
+
+            <div class="room-actions-dual">
+              <button type="button" class="btn btn-sage btn-sm" onclick="toggleSheet({{ room.id }})">Inclusions</button>
+              {% if room.isAvailable %}
+                <button type="button"
+                        class="btn btn-green btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#inquireRoomModal"
+                        data-room-name="{{ room.name }}"
+                        data-room-category="{{ catName }}"
+                        data-room-price="&#8369;{{ room.pricePerNight|number_format(2) }}"
+                        data-room-capacity="{{ room.capacity }}"
+                        onclick="openReserveModal(this)">
+                  Book Room
+                </button>
+              {% else %}
+                <button type="button" class="btn btn-sm" style="background: #b5ada3; color: #fff; cursor: not-allowed;" disabled>
+                  Maintenance
+                </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; background: var(--cream-light); padding: 3rem; border-radius: 12px;">
+          <h4 style="color: var(--emerald-green); margin-bottom: 0.5rem;">Rooms Coming Soon</h4>
+          <p style="color: var(--gray); font-size: 0.9rem;">No rooms have been added to the catalog yet. Sign in to the Management Console to publish rooms.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="section-divider-wrap">
+  <div class="divider-mountain"></div>
+  <div class="pattern-band"></div>
+</div>
+
+{# 6. Experience Showcase Section #}
+<section id="experience" class="section feature-section" style="padding-top: 4.5rem;">
+  <div class="container">
+    <div class="feature-head">
+      <span class="eyebrow">Why Guests Choose Evercove</span>
+      <h2>Everything here earns its place.</h2>
+      <p class="feature-hint">Click any card to preview the space.</p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-media">
+        <img id="experience-display" src="{{ asset('images/firepit.jpg') }}" alt="Evercove Feature Highlight">
+      </div>
+
+      <div class="feature-cards">
+        <div class="feature-card active" onclick="switchExperience('{{ asset('images/firepit.jpg') }}', this)">
+          <div class="icon-circle">🔥</div>
+          <h4>Firepit Lounge, Every Night</h4>
+          <p>Low seating, warm light, and nowhere you need to be — open to every guest, every evening.</p>
+        </div>
+
+        <div class="feature-card" onclick="switchExperience('{{ asset('images/trail.jpg') }}', this)">
+          <div class="icon-circle">🥾</div>
+          <h4>Private Trail Access</h4>
+          <p>40 acres of marked trail, straight from the back door — no shuttle, no crowd.</p>
+        </div>
+
+        <div class="feature-card" onclick="switchExperience('{{ asset('images/vinyl.jpg') }}', this)">
+          <div class="icon-circle">🎵</div>
+          <h4>Vinyl Listening Room</h4>
+          <p>A curated collection and a good pair of speakers — reservable for a private hour.</p>
+        </div>
+
+        <div class="feature-card" onclick="switchExperience('{{ asset('images/breakfast.jpg') }}', this)">
+          <div class="icon-circle">🍳</div>
+          <h4>Communal Breakfast, Included</h4>
+          <p>Slow mornings around one long table — included with every stay, no upcharge.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# 7. Guest Testimonials Section #}
+<section id="reviews" class="testimonials">
+  <svg class="testi-sun" viewBox="0 0 260 260">
+    <defs>
+      <filter id="sun-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="25" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
+    <circle cx="130" cy="130" r="95" fill="#f5be42" opacity="0.35" filter="url(#sun-glow)" />
+    <circle cx="130" cy="130" r="48" fill="#f7c852" />
+  </svg>
+
+  <svg class="testi-vector-backdrop" viewBox="0 0 1440 540" preserveAspectRatio="none">
+    <rect x="610" y="200" width="220" height="340" fill="#caa07a" />
+    <rect x="645" y="240" width="48" height="68" fill="#755135" rx="2" />
+    <rect x="745" y="240" width="48" height="68" fill="#755135" rx="2" />
+    <polygon points="830,540 985,225 1105,335 1255,130 1440,320 1440,540" fill="#274d3a" />
+    <polygon points="0,540 0,480 120,455 270,490 430,460 590,490 730,460 880,495 1040,460 1200,495 1330,460 1440,480 1440,540" fill="#274d3a" />
+  </svg>
+
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow eyebrow-green">Our Guests</span>
+      <h2>Loyal Guests, Honest Words</h2>
+      <p style="color: var(--emerald-green); font-weight: 600;">Rated 5.0 / 5.0 by recent highland guests</p>
+    </div>
+
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"Cool Valencia breeze, vinyl records at night, and coffee by the firepit before heading down to Dumaguete. Easily our favorite weekend escape."</p>
+        <div class="testi-attr">&mdash; A Recent Guest, Cabin Suite</div>
+      </div>
+
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"Zero noise, warm timber interiors, and the communal breakfast felt like staying at a friend's mountain lodge."</p>
+        <div class="testi-attr">&mdash; A Recent Guest, Forest Loft</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# 8. Call to Action Banner & Split Panels #}
+<section class="cta-banner">
+  <div class="container">
+    <span class="eyebrow">Ready When You Are</span>
+    <h2>A weekend away is closer than it feels.</h2>
+    <p>Two nights, no plans required. Just a fire, good company, and the woods.</p>
+    <a href="#rooms" class="btn btn-gold">Check Availability</a>
+  </div>
+</section>
+
+<div class="split-photo"></div>
+<div class="split-panels">
+  <div class="panel panel-gold">
+    <span class="eyebrow">Highland Escape</span>
+    <h3>Join the Evercove Circle</h3>
+    <p>Early access, late checkouts, and first pick of the lounge — ask our front desk during check-in.</p>
+    <a href="#about" class="btn btn-green">Learn More</a>
+  </div>
+  <div class="panel panel-green">
+    <span class="eyebrow">Book Direct</span>
+    <h3>Reserve Your Room</h3>
+    <p>Best rate guaranteed when you book directly with us — no middlemen, no markup.</p>
+    <a href="#rooms" class="btn btn-gold">View Rooms</a>
+  </div>
+</div>
+
+{# 9. Full Storefront Footer #}
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="{{ path('app_home') }}" class="logo"><img src="{{ asset('images/logo-2.png') }}" alt="Evercove Inn &amp; Suites"></a>
+        <p class="tagline">A boutique retreat deep in nature — built for disconnecting from the world and reconnecting with each other.</p>
+        <div class="addr">
+          Barangay Camp Lookout,<br>
+          Valencia, Negros Oriental, 6200<br>
+          Philippines
+        </div>
+        <div class="contact-line">+63 917 000 1234</div>
+        <div class="contact-line">hello@evercoveinn.ph</div>
+      </div>
+
+      <div class="footer-col">
+        <h5>Explore</h5>
+        <ul>
+          <li><a href="#rooms">Rooms &amp; Suites</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#reviews">Reviews</a></li>
+          <li><a href="#about">Our Story</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Inn Info</h5>
+        <ul>
+          <li><a href="#about">Trail Access</a></li>
+          <li><a href="{{ path('app_login') }}">Staff &amp; Admin Portal</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-news">
+        <h5>Stay in the Loop</h5>
+        <p>Quiet updates, no noise.</p>
+        <form class="news-form" onsubmit="event.preventDefault(); alert('Thank you for joining the Evercove Circle!'); this.reset();">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; {{ "now"|date("Y") }} Evercove Inn &amp; Suites. All rights reserved.</span>
+      <span>Dumaguete City, Negros Oriental, Philippines</span>
+    </div>
+  </div>
+</footer>
+
+{# Room Inquiry Modal #}
+<div class="modal fade" id="inquireRoomModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 12px; border: none; overflow: hidden;">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold mb-0">Reserve <span id="modalRoomName">Suite</span></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="p-3 rounded-3 mb-3 w-100" style="background: #ffffff; border: 1px solid rgba(188, 148, 86, 0.3);">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted text-nowrap" style="font-size: 0.85rem;">Classification:</span>
+            <strong id="modalRoomCategory" style="color: #274d3a;">—</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted text-nowrap" style="font-size: 0.85rem;">Max Occupancy:</span>
+            <strong><span id="modalRoomCapacity">2</span> Guests</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-muted text-nowrap" style="font-size: 0.85rem;">Nightly Rate:</span>
+            <strong id="modalRoomPrice" style="color: #bc9456;">&#8369;0.00</strong>
+          </div>
+        </div>
+        <p class="text-secondary mb-0" style="font-size: 0.88rem; line-height: 1.6;">
+          To finalize your reservation with our Front Desk in Valencia, call
+          <strong>+63 917 000 1234</strong> or email <strong>hello@evercoveinn.ph</strong>.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sage btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function filterCategory(category, element) {
+    document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
+    if (element) element.classList.add('active');
+
+    const cards = document.querySelectorAll('.room-card');
+    cards.forEach(card => {
+      if (category === 'all' || card.getAttribute('data-category') === category) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  function toggleSheet(id) {
+    const targetSheet = document.getElementById('sheet-' + id);
+    document.querySelectorAll('.room-inclusions-sheet').forEach(sheet => {
+      if (sheet !== targetSheet) sheet.classList.remove('active');
+    });
+    if (targetSheet) {
+      targetSheet.classList.toggle('active');
+    }
+  }
+
+  function switchExperience(imagePath, cardElement) {
+    const displayImg = document.getElementById('experience-display');
+    if (displayImg) {
+      displayImg.style.opacity = '0.2';
+      setTimeout(() => {
+        displayImg.src = imagePath;
+        displayImg.style.opacity = '1';
+      }, 150);
+    }
+    document.querySelectorAll('.feature-card').forEach(c => c.classList.remove('active'));
+    if (cardElement) {
+      cardElement.classList.add('active');
+    }
+  }
+
+  function openReserveModal(trigger) {
+    if (!trigger) return;
+    document.getElementById('modalRoomName').textContent = trigger.getAttribute('data-room-name') || 'Suite';
+    document.getElementById('modalRoomCategory').textContent = trigger.getAttribute('data-room-category') || '—';
+    document.getElementById('modalRoomPrice').textContent = trigger.getAttribute('data-room-price') || '₱0.00';
+    document.getElementById('modalRoomCapacity').textContent = trigger.getAttribute('data-room-capacity') || '2';
+  }
+</script>
+{% endblock %}

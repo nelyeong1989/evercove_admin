@@ -1,0 +1,57 @@
+{{ form_start(form) }}
+    <div class="evercove-form-fields">
+        {{ form_widget(form) }}
+        <div id="payment-sync-note" class="small fw-semibold mb-3" style="color: #274d3a;"></div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <a href="{{ path('app_payment_index') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-gold px-4">{{ button_label|default('Save Payment') }}</button>
+    </div>
+{{ form_end(form) }}
+
+<script>
+  (function () {
+    function initPaymentSync() {
+      const reservationSelect = document.getElementById('{{ form.reservation.vars.id }}');
+      const amountInput = document.getElementById('{{ form.amount.vars.id }}');
+      const statusSelect = document.getElementById('{{ form.paymentStatus.vars.id }}');
+      const noteEl = document.getElementById('payment-sync-note');
+
+      if (!reservationSelect || !amountInput || reservationSelect.dataset.syncBound === '1') return;
+      reservationSelect.dataset.syncBound = '1';
+
+      function syncPaymentAmount(forceOverwrite = false) {
+        const selectedOption = reservationSelect.options[reservationSelect.selectedIndex];
+        const rawAmount = selectedOption ? (selectedOption.getAttribute('data-amount') || '0') : '0';
+        const bookingAmount = parseFloat(rawAmount.replace(/[^0-9.]/g, '')) || 0;
+
+        if (forceOverwrite || !amountInput.value || parseFloat(amountInput.value) === 0) {
+          amountInput.value = bookingAmount.toFixed(2);
+        }
+
+        if (noteEl && statusSelect) {
+          if (statusSelect.value === 'Paid') {
+            noteEl.textContent = 'Saving as "Paid" will mark this reservation as Confirmed and update Dashboard Gross Revenue.';
+          } else {
+            noteEl.textContent = 'Amount synced from the selected reservation total.';
+          }
+        }
+      }
+
+      reservationSelect.addEventListener('change', () => syncPaymentAmount(true));
+      if (statusSelect) {
+        statusSelect.addEventListener('change', () => syncPaymentAmount(false));
+      }
+
+      syncPaymentAmount(false);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initPaymentSync);
+    } else {
+      initPaymentSync();
+    }
+    document.addEventListener('turbo:load', initPaymentSync);
+  })();
+</script>

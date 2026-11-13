@@ -1,4 +1,9 @@
-<form method="post" action="{{ path('app_reservation_delete', {'id': reservation.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+{% if is_granted('RECORD_DELETE', reservation) %}
+<form method="post" action="{{ path('app_reservation_delete', {'id': reservation.id}) }}" class="d-inline"
+      onsubmit="return confirm('Are you sure you want to delete reservation #{{ reservation.id }}?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
-    <button class="btn">Delete</button>
+    <button type="submit" class="btn btn-outline-danger btn-sm">
+        <i class="bi bi-trash"></i> Delete
+    </button>
 </form>
+{% endif %}

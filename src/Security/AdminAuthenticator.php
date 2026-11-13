@@ -48,8 +48,11 @@ class AdminAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // Redirect user to the Executive Dashboard after successful login
-        return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
+        if (in_array('ROLE_ADMIN', $token->getRoleNames(), true)) {
+            return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
+        }
+
+        return new RedirectResponse($this->urlGenerator->generate('app_reservation_index'));
     }
 
     protected function getLoginUrl(Request $request): string

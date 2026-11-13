@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -30,7 +31,7 @@ class RoomType extends AbstractType
             ])
             ->add('pricePerNight', MoneyType::class, [
                 'currency' => 'PHP',
-                'label' => 'Price per Night (₱)',
+                'label' => 'Price per Night',
                 'attr' => ['class' => 'form-control mb-3', 'placeholder' => '2500.00']
             ])
             ->add('capacity', NumberType::class, [
@@ -41,6 +42,15 @@ class RoomType extends AbstractType
                 'required' => false,
                 'label' => 'Image Relative Path',
                 'attr' => ['class' => 'form-control mb-3', 'placeholder' => 'images/room-1.jpg']
+            ])
+            ->add('inclusions', TextareaType::class, [
+                'required' => false,
+                'label' => 'Room Inclusions (One per line)',
+                'attr' => [
+                    'class' => 'form-control mb-3',
+                    'rows' => 4,
+                    'placeholder' => "King-size plush bed\nComplimentary breakfast\nNightly firepit lounge\nPrivate forest balcony",
+                ]
             ])
             ->add('isAvailable', CheckboxType::class, [
                 'required' => false,

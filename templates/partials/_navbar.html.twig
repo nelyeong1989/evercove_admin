@@ -1,0 +1,40 @@
+{% set currentRoute = app.request.attributes.get('_route') %}
+
+<header class="site-header">
+  <div class="container header-container" id="evercoveNavbar">
+    <a href="{{ path('app_home') }}" class="logo">
+      <img src="{{ asset('images/logo-1.png') }}" alt="Evercove Inn & Suites">
+    </a>
+
+    <button type="button" class="nav-toggle" aria-label="Toggle Menu"
+            onclick="document.getElementById('evercoveNavbar').classList.toggle('menu-open')">
+      &#9776;
+    </button>
+
+    <nav class="nav-links">
+      {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_dashboard') }}" class="{{ currentRoute == 'app_dashboard' or currentRoute == 'app_dashboard_alt' ? 'active-link' : '' }}">Dashboard</a>
+        <a href="{{ path('app_category_index') }}" class="{{ currentRoute starts with 'app_category' ? 'active-link' : '' }}">Categories</a>
+        <a href="{{ path('app_room_index') }}" class="{{ currentRoute starts with 'app_room' ? 'active-link' : '' }}">Rooms</a>
+        <a href="{{ path('app_user_index') }}" class="{{ currentRoute starts with 'app_user' or currentRoute == 'app_register' ? 'active-link' : '' }}">Staff Accounts</a>
+      {% endif %}
+
+      {% if is_granted('ROLE_STAFF') %}
+        <a href="{{ path('app_reservation_index') }}" class="{{ currentRoute starts with 'app_reservation' ? 'active-link' : '' }}">Reservations</a>
+        <a href="{{ path('app_payment_index') }}" class="{{ currentRoute starts with 'app_payment' ? 'active-link' : '' }}">Payments</a>
+      {% endif %}
+    </nav>
+
+    <div class="user-badge">
+      {% if app.user %}
+        <span class="user-greeting">
+          {{ app.user.username }}
+          <span class="badge {{ is_granted('ROLE_ADMIN') ? 'badge-admin' : 'badge-staff' }} ms-1">
+            {{ is_granted('ROLE_ADMIN') ? 'Admin' : 'Staff' }}
+          </span>
+        </span>
+        <a href="{{ path('app_logout') }}" class="btn btn-sage btn-sm">Log Out</a>
+      {% endif %}
+    </div>
+  </div>
+</header>

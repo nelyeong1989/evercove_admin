@@ -16,11 +16,25 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class CategoryController extends AbstractController
 {
-    #[Route('/', name: 'app_category_index', methods: ['GET'])]
-    public function index(CategoryRepository $categoryRepository): Response
+    #[Route('/', name: 'app_category_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager): Response
     {
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($category);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Category created successfully!');
+
+            return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         return $this->render('category/index.html.twig', [
             'categories' => $categoryRepository->findAll(),
+            'form' => $form,
         ]);
     }
 

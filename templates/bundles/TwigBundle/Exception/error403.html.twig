@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}403 Access Denied — Evercove{% endblock %}
+
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+  }
+  .denied-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #274d3a;
+    font-family: 'Montserrat', sans-serif;
+    padding: 1.5rem;
+    box-sizing: border-box;
+  }
+  .denied-card {
+    background: #fbf5ee;
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(188, 148, 86, 0.35);
+  }
+  .denied-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #bc9456;
+  }
+  .denied-card h1 {
+    color: #274d3a;
+    margin: 0.5rem 0 0.75rem;
+    font-size: 1.8rem;
+  }
+  .denied-card p {
+    color: #6c6357;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+  }
+  .denied-btn {
+    display: inline-block;
+    background: #bc9456;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .denied-btn:hover {
+    background: #a17d45;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="denied-wrapper">
+  <div class="denied-card">
+    <span class="denied-eyebrow">HTTP 403 &bull; Restricted Area</span>
+    <h1>Access Denied</h1>
+    <p>
+      You do not have permission to view this page or perform this action.
+    </p>
+
+    {% if is_granted('ROLE_ADMIN') %}
+      <a href="{{ path('app_dashboard') }}" class="denied-btn">Return to Dashboard</a>
+    {% elseif is_granted('ROLE_STAFF') %}
+      <a href="{{ path('app_reservation_index') }}" class="denied-btn">Return to Reservations</a>
+    {% else %}
+      <a href="{{ path('app_login') }}" class="denied-btn">Go to Sign In</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

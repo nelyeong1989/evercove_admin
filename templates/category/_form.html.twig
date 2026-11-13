@@ -1,4 +1,10 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="evercove-form-fields">
+        {{ form_widget(form) }}
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <a href="{{ path('app_category_index') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-gold px-4">{{ button_label|default('Save Category') }}</button>
+    </div>
 {{ form_end(form) }}

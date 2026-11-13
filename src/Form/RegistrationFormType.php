@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -17,27 +19,51 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('fullName', TextType::class, [
+                'label' => 'Full Name',
+                'attr' => [
+                    'class' => 'form-control mb-3',
+                    'placeholder' => 'e.g., Maria Santos',
+                ],
+                'constraints' => [
+                    new NotBlank(
+                        message: 'Please enter the staff member\'s full name'
+                    ),
+                ],
+            ])
             ->add('username', TextType::class, [
                 'label' => 'Username',
                 'attr' => [
                     'class' => 'form-control mb-3',
-                    'placeholder' => 'Enter admin username'
-                ]
+                    'placeholder' => 'e.g., frontdesk_maria',
+                ],
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email Address',
                 'attr' => [
                     'class' => 'form-control mb-3',
-                    'placeholder' => 'admin@evercove.com'
-                ]
+                    'placeholder' => 'staff@evercove.com',
+                ],
+            ])
+            ->add('role', ChoiceType::class, [
+                'mapped' => false,
+                'label' => 'Account Role',
+                'choices' => [
+                    'Front Desk Staff (ROLE_STAFF)' => 'ROLE_STAFF',
+                    'Administrator (ROLE_ADMIN)' => 'ROLE_ADMIN',
+                ],
+                'data' => 'ROLE_STAFF',
+                'attr' => [
+                    'class' => 'form-select mb-3',
+                ],
             ])
             ->add('plainPassword', PasswordType::class, [
                 'mapped' => false,
-                'label' => 'Password',
+                'label' => 'Initial Password',
                 'attr' => [
                     'autocomplete' => 'new-password',
                     'class' => 'form-control mb-3',
-                    'placeholder' => '••••••••'
+                    'placeholder' => '••••••••',
                 ],
                 'constraints' => [
                     new NotBlank(
@@ -48,6 +74,14 @@ class RegistrationFormType extends AbstractType
                         minMessage: 'Your password should be at least {{ limit }} characters',
                         max: 4096
                     ),
+                ],
+            ])
+            ->add('isActive', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Account Active (Allow Login)',
+                'data' => true,
+                'attr' => [
+                    'class' => 'form-check-input',
                 ],
             ])
         ;

@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Payments — Evercove Admin{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+  .admin-container { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+  .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+  .page-header h2 { color: #274d3a; font-weight: 700; font-size: 1.6rem; margin-bottom: 0.25rem; }
+  .btn-gold { background: #bc9456; color: #fff; font-weight: 700; border: none; padding: 0.6rem 1.25rem; border-radius: 6px; font-size: 0.88rem; text-decoration: none; }
+  .btn-gold:hover { background: #a17d45; color: #fff; }
+  .table-box { background: #fff; border: 1px solid rgba(188, 148, 86, 0.2); border-radius: 10px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); }
+  table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.85rem 1rem; white-space: nowrap; }
+  table td { padding: 1rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+  <div class="page-header">
+    <div>
+      <h2>Guest Payments &amp; Billing</h2>
+      <p class="text-muted mb-0" style="font-size: 0.9rem;">Record reservation payments, methods, and settlement statuses.</p>
+    </div>
+    <a href="{{ path('app_payment_new') }}" class="btn btn-gold">+ Record Payment</a>
+  </div>
+
+  <div class="table-box">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="border-top-left-radius: 6px;">Payment ID</th>
+            <th>Reservation</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Paid At</th>
+            <th>Recorded By</th>
+            <th class="text-end" style="border-top-right-radius: 6px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for payment in payments %}
+          <tr>
+            <td><strong>#{{ payment.id }}</strong></td>
+            <td class="text-nowrap">
+              <span class="badge" style="background-color: #f2e1d1; color: #274d3a;">
+                Booking #{{ payment.reservation.id }} &mdash; {{ payment.reservation.user.username }}
+              </span>
+            </td>
+            <td class="text-nowrap"><strong>&#8369;{{ payment.amount|number_format(2) }}</strong></td>
+            <td class="text-nowrap">{{ payment.paymentMethod }}</td>
+            <td>
+              {% if payment.paymentStatus == 'Paid' %}
+                <span class="badge bg-success">Paid</span>
+              {% elseif payment.paymentStatus == 'Pending' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+              {% elseif payment.paymentStatus == 'Refunded' %}
+                <span class="badge bg-info text-dark">Refunded</span>
+              {% else %}
+                <span class="badge bg-danger">{{ payment.paymentStatus }}</span>
+              {% endif %}
+            </td>
+            <td class="text-nowrap" style="font-size: 0.85rem;">{{ payment.paidAt ? payment.paidAt|date('M d, Y h:i A') : '—' }}</td>
+            <td>
+              {% if payment.createdBy %}
+                <span class="d-inline-flex align-items-center gap-1 text-muted text-nowrap" style="font-size: 0.85rem;">
+                  <i class="bi bi-person-circle" style="color: #274d3a;"></i>
+                  <span>{{ payment.createdBy.fullName ?: payment.createdBy.username }}</span>
+                </span>
+              {% else %}
+                <span class="text-muted" style="font-size: 0.85rem;">System</span>
+              {% endif %}
+            </td>
+            <td class="text-end text-nowrap">
+              <div class="d-inline-flex align-items-center justify-content-end gap-2">
+                <a href="{{ path('app_payment_show', {'id': payment.id}) }}" class="btn btn-sm btn-outline-secondary">View</a>
+
+                {% if is_granted('RECORD_EDIT', payment) %}
+                  <a href="{{ path('app_payment_edit', {'id': payment.id}) }}" class="btn btn-sm btn-outline-success">Edit</a>
+                {% else %}
+                  <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="You can only edit payments you recorded.">
+                    <i class="bi bi-lock-fill"></i>
+                  </button>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="8" class="text-center text-muted py-5">No payments recorded yet. Click "+ Record Payment" to add one.</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

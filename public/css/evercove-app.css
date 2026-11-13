@@ -1,0 +1,432 @@
+/* Page Shells & Layouts */
+body.evercove-storefront-shell,
+body.evercove-auth-shell {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body.evercove-admin-shell {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+}
+
+.evercove-workspace {
+  flex: 1;
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.evercove-main-content {
+  flex: 1;
+  padding-bottom: 2.5rem;
+}
+
+.evercove-storefront-shell .evercove-main-content,
+.evercove-main-content:has(.login-backdrop) {
+  padding-bottom: 0;
+}
+
+/* Fixed Back-Office Sidebar */
+.evercove-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background: linear-gradient(180deg, #1e382b 0%, #274d3a 100%);
+  color: #f2e1d1;
+  display: flex;
+  flex-direction: column;
+  z-index: 1040;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
+  transition: transform 0.25s ease;
+}
+
+.sidebar-brand {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid rgba(242, 225, 209, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-user-card {
+  margin: 0.75rem 0.9rem 0.25rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(188, 148, 86, 0.28);
+  border-radius: 10px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0.4rem 0.75rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(188, 148, 86, 0.45) transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(188, 148, 86, 0.45);
+  border-radius: 999px;
+}
+
+.sidebar-section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(242, 225, 209, 0.55);
+  padding: 0.6rem 0.75rem 0.3rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.52rem 0.8rem;
+  margin-bottom: 0.18rem;
+  border-radius: 8px;
+  color: rgba(242, 225, 209, 0.88);
+  text-decoration: none;
+  font-size: 0.84rem;
+  font-weight: 600;
+  transition: all 0.18s ease;
+}
+
+.sidebar-link i {
+  font-size: 1.05rem;
+  color: #bc9456;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-link:hover {
+  background: rgba(242, 225, 209, 0.1);
+  color: #ffffff;
+}
+
+.sidebar-link.active {
+  background: #bc9456;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(188, 148, 86, 0.35);
+}
+
+.sidebar-link.active i {
+  color: #ffffff;
+}
+
+.sidebar-footer {
+  padding: 0.65rem 0.75rem;
+  border-top: 1px solid rgba(242, 225, 209, 0.12);
+}
+
+.sidebar-logout:hover {
+  background: rgba(220, 53, 69, 0.22);
+  color: #ffd6da;
+}
+
+.sidebar-logout:hover i {
+  color: #ff8fa0;
+}
+
+.evercove-mobile-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 58px;
+  background: #1e382b;
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1030;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.evercove-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1035;
+}
+
+/* Role & Status Badges */
+.badge-staff {
+  background: var(--forest-green, #305d4b);
+  color: var(--white, #ffffff);
+}
+
+.badge-archived {
+  background: var(--danger, #dc3545);
+  color: var(--white, #ffffff);
+}
+
+.room-thumb {
+  width: 64px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(188, 148, 86, 0.35);
+}
+
+/* Branded Login Page */
+.login-backdrop {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(rgba(39, 77, 58, 0.84), rgba(30, 56, 43, 0.92)),
+              url('/images/green.jpg') center/cover no-repeat;
+}
+
+.login-backdrop .auth-box {
+  margin: 0;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Evercove Form Card Styling */
+.evercove-card {
+  background: var(--cream-light);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(39, 77, 58, 0.08);
+  border: 1px solid rgba(188, 148, 86, 0.25);
+}
+
+.evercove-card .form-control,
+.evercove-card .form-select {
+  border: 1px solid rgba(188, 148, 86, 0.4);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.88rem;
+}
+
+.evercove-card .form-control:focus,
+.evercove-card .form-select:focus {
+  border-color: var(--emerald-green);
+  box-shadow: 0 0 0 3px rgba(39, 77, 58, 0.14);
+}
+
+.evercove-card .btn-gold {
+  background: var(--warm-gold, #bc9456);
+  color: #ffffff;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+}
+
+.evercove-card .btn-gold:hover {
+  background: var(--gold-dark, #a17d45);
+  color: #ffffff;
+}
+
+.evercove-form-fields label,
+.evercove-card form label {
+  display: block;
+  color: #274d3a;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+.evercove-form-fields ul,
+.evercove-card form ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem;
+  color: #dc3545;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* High-Contrast Checkbox Toggle Box across all Admin Forms */
+.evercove-card div:has(> input[type="checkbox"]),
+.evercove-form-fields div:has(> input[type="checkbox"]) {
+  display: flex !important;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.65rem;
+  margin-bottom: 1.15rem;
+  padding: 0.8rem 1rem;
+  background-color: #ffffff !important;
+  border: 1.5px solid rgba(39, 77, 58, 0.45) !important;
+  border-radius: 8px;
+}
+
+.evercove-card input[type="checkbox"],
+.evercove-form-fields input[type="checkbox"] {
+  order: -1;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 1.35rem !important;
+  height: 1.35rem !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+  background-color: #ffffff !important;
+  border: 2px solid #274d3a !important;
+  border-radius: 5px !important;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.evercove-card input[type="checkbox"]:hover,
+.evercove-form-fields input[type="checkbox"]:hover {
+  border-color: #bc9456 !important;
+  box-shadow: 0 0 0 3px rgba(39, 77, 58, 0.14) !important;
+}
+
+.evercove-card input[type="checkbox"]:checked,
+.evercove-form-fields input[type="checkbox"]:checked {
+  background-color: #274d3a !important;
+  border-color: #274d3a !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e") !important;
+  background-size: 85% 85% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.evercove-card div:has(> input[type="checkbox"]) label,
+.evercove-form-fields div:has(> input[type="checkbox"]) label {
+  margin-bottom: 0 !important;
+  color: #274d3a !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Table Header & Action Button Spacing across all Admin Tables */
+.table-box .table thead th {
+  --bs-table-bg: #274d3a;
+  --bs-table-color: #f2e1d1;
+  background-color: #274d3a !important;
+  color: #f2e1d1 !important;
+  border-bottom: none;
+  white-space: nowrap;
+}
+
+.table-box .table td:last-child {
+  white-space: nowrap;
+}
+
+.table-box .table td:last-child .btn,
+.table-box .table td:last-child form {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0.15rem 0.25rem;
+}
+
+/* Fix Dashboard Gross Revenue Colliding with KPI Icon */
+.kpi-grid > div,
+.kpi-card {
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.kpi-grid > div > div:first-child,
+.kpi-card > div:first-child {
+  min-width: 0;
+}
+
+.kpi-grid .kpi-value,
+.kpi-grid h3,
+.kpi-card .kpi-value,
+.kpi-card h3 {
+  font-size: clamp(1.25rem, 1.55vw, 1.65rem) !important;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.kpi-grid .kpi-icon,
+.kpi-card .kpi-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+}
+
+/* Restore Borders on Bootstrap Outline Buttons Overridden by style.css */
+.evercove-admin-shell .btn-outline-secondary {
+  border: 1.5px solid #6c757d !important;
+  color: #495057;
+}
+
+.evercove-admin-shell .btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: #ffffff;
+}
+
+.evercove-admin-shell .btn-outline-success {
+  border: 1.5px solid #274d3a !important;
+  color: #274d3a;
+}
+
+.evercove-admin-shell .btn-outline-success:hover {
+  background-color: #274d3a;
+  color: #ffffff;
+}
+
+.evercove-admin-shell .btn-outline-danger {
+  border: 1.5px solid #dc3545 !important;
+  color: #dc3545;
+}
+
+.evercove-admin-shell .btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 991.98px) {
+  .evercove-sidebar {
+    transform: translateX(-100%);
+  }
+
+  body.sidebar-open .evercove-sidebar {
+    transform: translateX(0);
+  }
+
+  body.sidebar-open .evercove-sidebar-backdrop {
+    display: block;
+  }
+
+  .evercove-workspace {
+    margin-left: 0;
+    padding-top: 58px;
+  }
+}
+
+@media (max-width: 960px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .kpi-grid,
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

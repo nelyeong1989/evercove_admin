@@ -1,4 +1,105 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="evercove-form-fields">
+        {{ form_widget(form) }}
+        <div id="reservation-availability-alert" class="mb-3"></div>
+        <div id="reservation-calc-summary" class="small fw-semibold mb-3" style="color: #274d3a;"></div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <a href="{{ path('app_reservation_index') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" id="reservation-submit-btn" class="btn btn-gold px-4">{{ button_label|default('Save Reservation') }}</button>
+    </div>
 {{ form_end(form) }}
+
+<script>
+  (function () {
+    const bookedRanges = {{ bookedRanges|default([])|json_encode|raw }};
+
+    function initReservationCalc() {
+      const roomSelect = document.getElementById('{{ form.room.vars.id }}');
+      const checkInInput = document.getElementById('{{ form.checkIn.vars.id }}');
+      const checkOutInput = document.getElementById('{{ form.checkOut.vars.id }}');
+      const statusSelect = document.getElementById('{{ form.status.vars.id }}');
+      const totalInput = document.getElementById('{{ form.totalPrice.vars.id }}');
+      const summaryEl = document.getElementById('reservation-calc-summary');
+      const alertEl = document.getElementById('reservation-availability-alert');
+      const submitBtn = document.getElementById('reservation-submit-btn');
+
+      if (!roomSelect || !totalInput || roomSelect.dataset.calcBound === '1') return;
+      roomSelect.dataset.calcBound = '1';
+
+      function updateReservationState() {
+        const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+        const roomId = parseInt(roomSelect.value, 10);
+        const rawPrice = selectedOption ? (selectedOption.getAttribute('data-price') || '0') : '0';
+        const rate = parseFloat(rawPrice.replace(/[^0-9.]/g, '')) || 0;
+
+        const checkInVal = checkInInput ? checkInInput.value : '';
+        const checkOutVal = checkOutInput ? checkOutInput.value : '';
+        const statusVal = statusSelect ? statusSelect.value : 'Pending';
+        const isActiveBooking = statusVal === 'Pending' || statusVal === 'Confirmed';
+
+        let nights = 1;
+        if (checkInVal && checkOutVal) {
+          const start = new Date(checkInVal + 'T00:00:00');
+          const end = new Date(checkOutVal + 'T00:00:00');
+          if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+            const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24));
+            nights = diffDays >= 1 ? diffDays : 1;
+          }
+          checkOutInput.min = checkInVal;
+        }
+
+        const total = rate * nights;
+        totalInput.value = total.toFixed(2);
+
+        if (summaryEl && rate > 0) {
+          summaryEl.textContent = `Rate breakdown: ${nights} night${nights > 1 ? 's' : ''} × ₱${rate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ₱${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        if (!alertEl) return;
+
+        const roomBookings = bookedRanges.filter((b) => b.roomId === roomId);
+        let hasBlockingIssue = false;
+
+        if (checkInVal && checkOutVal && checkOutVal <= checkInVal) {
+          hasBlockingIssue = true;
+          alertEl.innerHTML = `<div class="alert alert-danger py-2 px-3 mb-0 small fw-semibold"><i class="bi bi-exclamation-triangle-fill me-1"></i> Check-out date must be at least 1 day after the check-in date.</div>`;
+        } else if (isActiveBooking && checkInVal && checkOutVal) {
+          const conflict = roomBookings.find((b) => b.checkIn < checkOutVal && b.checkOut > checkInVal);
+          if (conflict) {
+            hasBlockingIssue = true;
+            alertEl.innerHTML = `<div class="alert alert-danger py-2 px-3 mb-0 small fw-semibold"><i class="bi bi-x-circle-fill me-1"></i> Already in use: Booked from <strong>${conflict.checkInLabel}</strong> to <strong>${conflict.checkOutLabel}</strong> (Booking #${conflict.id} &mdash; ${conflict.status}).</div>`;
+          } else {
+            alertEl.innerHTML = `<div class="alert alert-success py-2 px-3 mb-0 small fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Room is available for these dates.</div>`;
+          }
+        } else if (roomBookings.length > 0) {
+          const schedules = roomBookings.map((b) => `${b.checkInLabel} – ${b.checkOutLabel}`).join(', ');
+          alertEl.innerHTML = `<div class="alert alert-warning py-2 px-3 mb-0 small"><i class="bi bi-calendar-event me-1"></i> <strong>Occupied dates for this room:</strong> ${schedules}</div>`;
+        } else {
+          alertEl.innerHTML = '';
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = hasBlockingIssue;
+        }
+      }
+
+      [roomSelect, checkInInput, checkOutInput, statusSelect].forEach((el) => {
+        if (el) {
+          el.addEventListener('change', updateReservationState);
+          el.addEventListener('input', updateReservationState);
+        }
+      });
+
+      updateReservationState();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initReservationCalc);
+    } else {
+      initReservationCalc();
+    }
+    document.addEventListener('turbo:load', initReservationCalc);
+  })();
+</script>
